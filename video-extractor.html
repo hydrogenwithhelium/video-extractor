@@ -3,300 +3,400 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Link Extractor</title>
+  <meta name="description" content="Extract the media URL from a wrapper URL.">
+  <title>URL Extractor</title>
+
   <style>
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
     body {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
       min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      background: #f5f7fb;
+      color: #172033;
       display: flex;
-      align-items: center;
       justify-content: center;
-      color: #e2e8f0;
-      padding: 20px;
+      padding: 40px 16px;
     }
 
     .container {
-      background: #1e293b;
-      border-radius: 16px;
-      padding: 32px;
       width: 100%;
-      max-width: 640px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      border: 1px solid #334155;
+      max-width: 760px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 14px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: #2563eb;
+      color: white;
+      font-size: 26px;
+      font-weight: 800;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
     }
 
     h1 {
-      font-size: 1.8rem;
+      font-size: clamp(28px, 5vw, 40px);
       margin-bottom: 8px;
-      background: linear-gradient(90deg, #38bdf8, #818cf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     .subtitle {
-      color: #94a3b8;
-      margin-bottom: 28px;
-      font-size: 0.95rem;
+      color: #68738a;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e5e9f2;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 15px 40px rgba(31, 41, 55, 0.07);
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: #cbd5e1;
+      font-weight: 700;
+      margin-bottom: 9px;
     }
 
     textarea {
       width: 100%;
-      height: 90px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 14px;
-      color: #e2e8f0;
-      font-size: 0.95rem;
+      min-height: 130px;
       resize: vertical;
+      border: 1px solid #d8deea;
+      border-radius: 12px;
+      padding: 14px;
+      font: inherit;
+      color: #172033;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     textarea:focus {
-      border-color: #38bdf8;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
 
-    .btn-group {
+    .actions {
       display: flex;
-      gap: 12px;
-      margin-top: 16px;
       flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
     }
 
     button {
-      flex: 1;
-      min-width: 140px;
-      padding: 12px 20px;
-      border: none;
+      border: 0;
       border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.15s, opacity 0.15s;
     }
 
-    .extract-btn {
-      background: linear-gradient(90deg, #38bdf8, #818cf8);
-      color: #0f172a;
+    button:hover {
+      transform: translateY(-1px);
     }
 
-    .extract-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+    button:active {
+      transform: translateY(0);
     }
 
-    .clear-btn {
-      background: #334155;
-      color: #e2e8f0;
+    .primary {
+      background: #2563eb;
+      color: white;
     }
 
-    .clear-btn:hover {
-      background: #475569;
+    .secondary {
+      background: #eef2f7;
+      color: #263247;
     }
 
-    .result-box {
-      margin-top: 28px;
+    .success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .result {
       display: none;
-      animation: fadeIn 0.3s ease;
+      margin-top: 24px;
+      border-top: 1px solid #e8ecf3;
+      padding-top: 24px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .result.show {
+      display: block;
     }
 
-    .result-label {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      margin-bottom: 8px;
+    .result-title {
+      font-weight: 800;
+      margin-bottom: 10px;
     }
 
-    .direct-link {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 10px;
+    .url-box {
+      background: #f7f9fc;
+      border: 1px solid #e0e5ee;
+      border-radius: 12px;
       padding: 14px;
       word-break: break-all;
-      font-family: monospace;
-      font-size: 0.9rem;
-      color: #38bdf8;
-      margin-bottom: 16px;
+      line-height: 1.55;
+      font-size: 14px;
     }
 
-    .action-buttons {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+    .status {
+      min-height: 24px;
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .download-btn {
-      background: #10b981;
-      color: white;
+    .status.error {
+      color: #dc2626;
     }
 
-    .download-btn:hover {
-      background: #059669;
-      transform: translateY(-2px);
+    .status.ok {
+      color: #16a34a;
     }
 
-    .copy-btn {
-      background: #6366f1;
-      color: white;
+    .info {
+      margin-top: 24px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #eff6ff;
+      color: #1e40af;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
-    .copy-btn:hover {
-      background: #4f46e5;
-      transform: translateY(-2px);
-    }
-
-    .error {
-      color: #f87171;
-      margin-top: 12px;
-      font-size: 0.9rem;
-      display: none;
-    }
-
-    .footer {
-      margin-top: 32px;
+    footer {
       text-align: center;
-      font-size: 0.8rem;
-      color: #64748b;
+      color: #8993a5;
+      font-size: 13px;
+      margin-top: 22px;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding-top: 24px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .actions button {
+        width: 100%;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Video Link Extractor</h1>
-    <p class="subtitle">Paste any studyuk.online wrapper link and get the direct .webm download URL</p>
+  <main class="container">
 
-    <label for="wrapperUrl">Wrapper URL</label>
-    <textarea id="wrapperUrl" placeholder="Paste the full link here...
-Example:
-https://studyuk.online/sdv123.html?url=https%3A%2F%2Fuamedia.uacdn.net%2F..."></textarea>
+    <header class="header">
+      <div class="logo">↗</div>
+      <h1>URL Extractor</h1>
+      <p class="subtitle">
+        Extract the destination URL from a wrapper link.
+      </p>
+    </header>
 
-    <div class="btn-group">
-      <button class="extract-btn" onclick="extractLink()">Extract Direct Link</button>
-      <button class="clear-btn" onclick="clearAll()">Clear</button>
-    </div>
+    <section class="card">
 
-    <div class="error" id="errorMsg"></div>
+      <label for="inputUrl">Wrapper URL</label>
 
-    <div class="result-box" id="resultBox">
-      <div class="result-label">Direct Download Link:</div>
-      <div class="direct-link" id="directLink"></div>
+      <textarea
+        id="inputUrl"
+        placeholder="Paste your wrapper URL here..."
+        spellcheck="false"
+      ></textarea>
 
-      <div class="action-buttons">
-        <button class="download-btn" onclick="openDirect()">Open / Download</button>
-        <button class="copy-btn" onclick="copyLink()">Copy Link</button>
+      <div class="actions">
+        <button class="primary" id="extractBtn">
+          Extract URL
+        </button>
+
+        <button class="secondary" id="pasteBtn">
+          Paste
+        </button>
+
+        <button class="danger" id="clearBtn">
+          Clear
+        </button>
       </div>
-    </div>
 
-    <div class="footer">
-      Works fully offline • No data is sent anywhere
-    </div>
-  </div>
+      <div class="status" id="status"></div>
+
+      <div class="result" id="result">
+
+        <div class="result-title">
+          Extracted URL
+        </div>
+
+        <div class="url-box" id="outputUrl"></div>
+
+        <div class="actions">
+          <button class="success" id="copyBtn">
+            Copy URL
+          </button>
+
+          <button class="secondary" id="openBtn">
+            Open URL
+          </button>
+        </div>
+
+      </div>
+
+      <div class="info">
+        <strong>How it works:</strong>
+        This tool reads the <code>url</code> query parameter from the
+        wrapper URL and decodes it in your browser. Nothing is uploaded
+        to a server.
+      </div>
+
+    </section>
+
+    <footer>
+      Runs entirely in your browser.
+    </footer>
+
+  </main>
 
   <script>
-    function extractLink() {
-      const input = document.getElementById('wrapperUrl').value.trim();
-      const errorMsg = document.getElementById('errorMsg');
-      const resultBox = document.getElementById('resultBox');
-      const directLinkEl = document.getElementById('directLink');
+    const input = document.getElementById("inputUrl");
+    const extractBtn = document.getElementById("extractBtn");
+    const pasteBtn = document.getElementById("pasteBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const openBtn = document.getElementById("openBtn");
 
-      errorMsg.style.display = 'none';
-      resultBox.style.display = 'none';
+    const result = document.getElementById("result");
+    const output = document.getElementById("outputUrl");
+    const status = document.getElementById("status");
 
-      if (!input) {
-        showError('Please paste a URL first.');
+    let extractedUrl = "";
+
+    function setStatus(message, type = "") {
+      status.textContent = message;
+      status.className = "status " + type;
+    }
+
+    function extractUrl() {
+      const value = input.value.trim();
+
+      result.classList.remove("show");
+      extractedUrl = "";
+      setStatus("");
+
+      if (!value) {
+        setStatus("Please paste a URL first.", "error");
+        return;
+      }
+
+      let parsed;
+
+      try {
+        parsed = new URL(value);
+      } catch {
+        setStatus("That does not appear to be a valid URL.", "error");
+        return;
+      }
+
+      const target = parsed.searchParams.get("url");
+
+      if (!target) {
+        setStatus(
+          'No "url" parameter was found in this wrapper URL.',
+          "error"
+        );
         return;
       }
 
       try {
-        let urlObj;
+        extractedUrl = new URL(target, parsed.origin).href;
+      } catch {
+        setStatus("The URL parameter is not a valid destination URL.", "error");
+        return;
+      }
 
-        // Try to parse as full URL
-        if (input.startsWith('http')) {
-          urlObj = new URL(input);
-        } else {
-          // In case user only pastes the query part
-          urlObj = new URL('https://dummy.com/?' + input);
-        }
+      output.textContent = extractedUrl;
+      result.classList.add("show");
 
-        const encodedUrl = urlObj.searchParams.get('url');
+      setStatus("URL extracted successfully.", "ok");
+    }
 
-        if (!encodedUrl) {
-          showError('No "url" parameter found in this link.');
+    extractBtn.addEventListener("click", extractUrl);
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      output.textContent = "";
+      extractedUrl = "";
+      result.classList.remove("show");
+      setStatus("");
+      input.focus();
+    });
+
+    pasteBtn.addEventListener("click", async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+
+        if (!text) {
+          setStatus("Clipboard is empty.", "error");
           return;
         }
 
-        const directUrl = decodeURIComponent(encodedUrl);
-
-        // Basic validation
-        if (!directUrl.startsWith('http')) {
-          showError('Extracted value is not a valid URL.');
-          return;
-        }
-
-        directLinkEl.textContent = directUrl;
-        resultBox.style.display = 'block';
-
-        // Store for buttons
-        window.currentDirectUrl = directUrl;
-
-      } catch (err) {
-        showError('Invalid URL format. Please check the link.');
+        input.value = text;
+        setStatus("URL pasted. Click Extract URL.", "ok");
+      } catch {
+        setStatus(
+          "Clipboard access was blocked. Paste the URL manually.",
+          "error"
+        );
       }
-    }
+    });
 
-    function showError(msg) {
-      const errorMsg = document.getElementById('errorMsg');
-      errorMsg.textContent = msg;
-      errorMsg.style.display = 'block';
-    }
+    copyBtn.addEventListener("click", async () => {
+      if (!extractedUrl) return;
 
-    function openDirect() {
-      if (window.currentDirectUrl) {
-        window.open(window.currentDirectUrl, '_blank');
+      try {
+        await navigator.clipboard.writeText(extractedUrl);
+        setStatus("URL copied to clipboard.", "ok");
+      } catch {
+        setStatus(
+          "Could not access the clipboard. Copy the URL manually.",
+          "error"
+        );
       }
-    }
+    });
 
-    function copyLink() {
-      if (window.currentDirectUrl) {
-        navigator.clipboard.writeText(window.currentDirectUrl).then(() => {
-          const btn = document.querySelector('.copy-btn');
-          const original = btn.textContent;
-          btn.textContent = 'Copied!';
-          setTimeout(() => btn.textContent = original, 1500);
-        });
-      }
-    }
+    openBtn.addEventListener("click", () => {
+      if (!extractedUrl) return;
 
-    function clearAll() {
-      document.getElementById('wrapperUrl').value = '';
-      document.getElementById('resultBox').style.display = 'none';
-      document.getElementById('errorMsg').style.display = 'none';
-      window.currentDirectUrl = null;
-    }
+      window.open(extractedUrl, "_blank", "noopener,noreferrer");
+    });
 
-    // Optional: Allow Enter key (Ctrl+Enter) to extract
-    document.getElementById('wrapperUrl').addEventListener('keydown', function(e) {
-      if (e.ctrlKey && e.key === 'Enter') {
-        extractLink();
+    input.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        extractUrl();
       }
     });
   </script>
